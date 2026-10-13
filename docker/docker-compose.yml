@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: sp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student_portal
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - sp-network
+
+  api:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.api
+    container_name: sp-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql
+    env_file:
+      - ../apps/api/.env
+    volumes:
+      - ../apps/api/uploads:/app/uploads
+    networks:
+      - sp-network
+
+  web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.web
+    container_name: sp-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    env_file:
+      - ../apps/web/.env.local
+    networks:
+      - sp-network
+
+volumes:
+  mysql_data:
+
+networks:
+  sp-network:
+    driver: bridge
