@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { Attendance } from './entities/attendance.entity';
 
 @Injectable()
@@ -15,7 +15,21 @@ export class AttendanceService {
     return a;
   }
 
-  create(data: Partial<Attendance>) { return this.repo.save(this.repo.create(data)); }
+  async create(data: Partial<Attendance>) {
+    try {
+      return await this.repo.save(this.repo.create(data));
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        error.driverError?.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new ConflictException(
+          'Attendance has already been recorded for this student and date',
+        );
+      }
+      throw error;
+    }
+  }
 
   async update(id: number, data: Partial<Attendance>) {
     await this.findOne(id);
