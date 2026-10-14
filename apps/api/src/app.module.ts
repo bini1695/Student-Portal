@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DashboardModule } from './modules/dashboard/dashboard.module';
+
 import databaseConfig from './config/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+// Import all modules
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
@@ -19,10 +20,16 @@ import { CourseSectionsModule } from './modules/course-sections/course-sections.
 import { EnrollmentsModule } from './modules/enrollments/enrollments.module';
 import { GradesModule } from './modules/grades/grades.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { CourseMaterialsModule } from './modules/course-materials/course-materials.module';
 import { AnnouncementsModule } from './modules/announcements/announcements.module';
 import { FeesModule } from './modules/fees/fees.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { RequestsModule } from './modules/requests/requests.module';
+import { LogsModule } from './modules/logs/logs.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -31,6 +38,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
       envFilePath: '.env',
       load: [databaseConfig],
     }),
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -46,13 +54,14 @@ import { PaymentsModule } from './modules/payments/payments.module';
         charset: 'utf8mb4',
       }),
     }),
+
+    // Feature modules
     AuthModule,
     UsersModule,
     RolesModule,
     DepartmentsModule,
     StudentsModule,
     TeachersModule,
-    DashboardModule,
     AcademicYearsModule,
     SemestersModule,
     CoursesModule,
@@ -60,10 +69,16 @@ import { PaymentsModule } from './modules/payments/payments.module';
     EnrollmentsModule,
     GradesModule,
     AttendanceModule,
+    AssignmentsModule,
+    CourseMaterialsModule,
     AnnouncementsModule,
     FeesModule,
     InvoicesModule,
     PaymentsModule,
+    RequestsModule,
+    LogsModule,
+    UploadsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
