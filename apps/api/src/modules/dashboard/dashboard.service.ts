@@ -98,7 +98,7 @@ export class DashboardService {
   async teacherStats(userId: number) {
     const teacher = await this.teachersRepo.findOne({ where: { userId } });
     if (!teacher) {
-      return { role: 'teacher', stats: {}, sections: [] };
+      return { role: 'teacher', stats: { totalSections: 0, totalStudents: 0, totalAssignments: 0, avgAttendance: 0 }, sections: [] };
     }
 
     const sections = await this.sectionsRepo.find({
@@ -109,7 +109,9 @@ export class DashboardService {
       role: 'teacher',
       stats: {
         totalSections: sections.length,
-        totalStudents: sections.reduce((sum, s) => sum + s.enrolledCount, 0),
+        totalStudents: sections.reduce((sum, s) => sum + (s.enrolledCount || 0), 0),
+        totalAssignments: 0,
+        avgAttendance: 0,
       },
       sections,
     };
@@ -119,7 +121,7 @@ export class DashboardService {
   async studentStats(userId: number) {
     const student = await this.studentsRepo.findOne({ where: { userId } });
     if (!student) {
-      return { role: 'student', stats: {}, enrollments: [], invoices: [] };
+      return { role: 'student', stats: {}, enrollments: [], invoices: [], recentAnnouncements: [] };
     }
 
     const [enrollments, invoices, announcements] = await Promise.all([
