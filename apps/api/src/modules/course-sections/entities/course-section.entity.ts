@@ -38,6 +38,14 @@ export class CourseSection {
   @Column({ type: 'enum', enum: ['open', 'closed', 'cancelled'], default: 'open' })
   status: 'open' | 'closed' | 'cancelled';
 
+  @Column({
+    name: 'offering_status',
+    type: 'enum',
+    enum: ['submitted', 'approved', 'rejected'],
+    default: 'approved',
+  })
+  offeringStatus: 'submitted' | 'approved' | 'rejected';
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
