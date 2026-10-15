@@ -15,12 +15,20 @@ export class SemestersService {
     return s;
   }
 
-  create(data: Partial<Semester>) { return this.repo.save(this.repo.create(data)); }
+  async create(data: Partial<Semester>) {
+    return this.repo.manager.transaction(async (manager) => {
+      if (data.isCurrent) await manager.update(Semester, { isCurrent: true }, { isCurrent: false });
+      return manager.save(Semester, manager.create(Semester, data));
+    });
+  }
 
   async update(id: number, data: Partial<Semester>) {
     await this.findOne(id);
-    await this.repo.update(id, data);
-    return this.findOne(id);
+    return this.repo.manager.transaction(async (manager) => {
+      if (data.isCurrent) await manager.update(Semester, { isCurrent: true }, { isCurrent: false });
+      await manager.update(Semester, id, data);
+      return manager.findOneByOrFail(Semester, { id });
+    });
   }
 
   async remove(id: number) {
