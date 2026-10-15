@@ -1,24 +1,24 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { ClipboardList, DollarSign, AlertCircle } from 'lucide-react';
-import api from '@/lib/api';
-import { StatCard } from '@/components/charts/StatCard';
+import { AlertCircle, ClipboardList, DollarSign, Receipt, Wallet } from 'lucide-react';
+import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 
 export default function AccountantDashboard() {
-  const [stats, setStats] = useState<any>(null);
-
-  useEffect(() => {
-    api.get('/dashboard/me').then((r) => setStats(r.data.stats)).catch(() => {});
-  }, []);
-
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Accountant Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Invoices" value={stats?.totalInvoices ?? '—'} icon={ClipboardList} color="blue" />
-        <StatCard title="Collected" value={`$${stats?.totalCollected ?? 0}`} icon={DollarSign} color="green" />
-        <StatCard title="Outstanding" value={`$${stats?.outstanding ?? 0}`} icon={AlertCircle} color="red" />
-      </div>
-    </div>
+    <DashboardOverview
+      title="Accountant Dashboard"
+      stats={[
+        { key: 'totalInvoices', label: 'Invoices', icon: ClipboardList, color: 'blue' },
+        { key: 'totalPayments', label: 'Payments', icon: Receipt, color: 'purple' },
+        { key: 'totalBilled', label: 'Total billed', icon: Wallet, color: 'yellow', currency: true },
+        { key: 'totalCollected', label: 'Collected', icon: DollarSign, color: 'green', currency: true },
+        { key: 'outstanding', label: 'Outstanding', icon: AlertCircle, color: 'red', currency: true },
+      ]}
+      shortcuts={[
+        { label: 'Fee structures', href: '/accountant/fee-structures' },
+        { label: 'Invoices', href: '/accountant/invoices' },
+        { label: 'Record payment', href: '/accountant/payments/new' },
+        { label: 'Financial reports', href: '/accountant/reports' },
+      ]}
+    />
   );
 }
