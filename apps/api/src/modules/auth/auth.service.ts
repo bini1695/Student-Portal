@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Role } from '../../common/constants/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,9 @@ export class AuthService {
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('This account is inactive. Contact an administrator.');
+    }
 
     const payload = {
       sub: user.id,
@@ -32,17 +36,24 @@ export class AuthService {
         email: user.email,
         fullName: user.fullName,
         role: user.role?.name,
+        roleId: user.roleId,
       },
     };
   }
 
   async register(dto: RegisterDto) {
+    if (dto.roleId !== undefined) {
+      const requestedRole = await this.usersService.findOneRoleNameById(dto.roleId);
+      if (requestedRole !== Role.STUDENT) {
+        throw new ForbiddenException('Public registration is limited to student accounts. Contact an administrator for staff access.');
+      }
+    }
     const user = await this.usersService.create({
       email: dto.email,
       password: dto.password,
       fullName: dto.fullName,
       phone: dto.phone,
-      roleId: dto.roleId ?? 4,
+      roleId: await this.usersService.findRoleIdByName(Role.STUDENT),
     });
     return user;
   }
