@@ -2,14 +2,35 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import axios from 'axios';
 import api from '@/lib/api';
-import { useAuth } from '@/store/authStore';
+import { useAuth, type User } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
+const ROLE_ROUTES: Record<string, string> = {
+  super_admin: '/super-admin',
+  admin: '/admin',
+  teacher: '/teacher',
+  student: '/student',
+  accountant: '/accountant',
+  dept_head: '/dept-head',
+};
+
+function isLoginUser(value: unknown): value is User {
+  if (typeof value !== 'object' || value === null) return false;
+  const user = value as Partial<User>;
+  return (
+    typeof user.id === 'number' &&
+    typeof user.email === 'string' &&
+    typeof user.fullName === 'string' &&
+    typeof user.role === 'string'
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const login = useAuth((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,20 +43,34 @@ export default function LoginPage() {
 
     try {
       const res = await api.post('/auth/login', { email, password });
-      const { accessToken, user } = res.data;
-      login(accessToken, user);
-
-      const routes: Record<string, string> = {
-        super_admin: '/super-admin',
-        admin: '/admin',
-        teacher: '/teacher',
-        student: '/student',
-        accountant: '/accountant',
-        dept_head: '/dept-head',
+      const { accessToken, user: responseUser } = res.data as {
+        accessToken?: string;
+        user?: unknown;
       };
-      router.push(routes[user.role] || '/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+
+      if (!accessToken || !isLoginUser(responseUser)) {
+        setError('The server returned an invalid login response. Please try again.');
+        return;
+      }
+
+      const target = ROLE_ROUTES[responseUser.role];
+      if (!target) {
+        setError('This account does not have access to a portal dashboard.');
+        return;
+      }
+
+      const user: User = {
+        ...responseUser,
+        roleId: typeof responseUser.roleId === 'number' ? responseUser.roleId : undefined,
+      };
+      login(accessToken, user);
+      router.replace(target);
+    } catch (err: unknown) {
+      setError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message ?? 'Unable to sign in. Please try again.'
+          : 'Unable to sign in. Please try again.',
+      );
     } finally {
       setLoading(false);
     }
