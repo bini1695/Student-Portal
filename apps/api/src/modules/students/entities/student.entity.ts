@@ -36,8 +36,8 @@ export class Student {
   @Column({ name: 'current_semester', default: 1 })
   currentSemester: number;
 
-  @Column({ type: 'enum', enum: ['active', 'graduated', 'withdrawn', 'suspended'], default: 'active' })
-  status: 'active' | 'graduated' | 'withdrawn' | 'suspended';
+  @Column({ type: 'enum', enum: ['pending', 'active', 'rejected', 'graduated', 'withdrawn', 'suspended'], default: 'active' })
+  status: 'pending' | 'active' | 'rejected' | 'graduated' | 'withdrawn' | 'suspended';
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
