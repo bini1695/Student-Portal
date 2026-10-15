@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { INULogo } from '@/components/ui/INULogo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,7 +12,6 @@ export default function RegisterPage() {
     password: '',
     fullName: '',
     phone: '',
-    roleId: 4,
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -25,7 +25,7 @@ export default function RegisterPage() {
 
     try {
       await api.post('/auth/register', form);
-      setSuccess('Registration successful! Redirecting to login...');
+      setSuccess('Application submitted for admission review. Redirecting to login...');
       setTimeout(() => router.push('/login'), 1500);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -37,6 +37,9 @@ export default function RegisterPage() {
   return (
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
+        <div className="inline-flex mb-4">
+          <INULogo size={72} />
+        </div>
         <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
         <p className="text-gray-500 mt-2">Register for the student portal</p>
       </div>
@@ -87,17 +90,9 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label className="label">Role</label>
-          <select
-            className="input"
-            value={form.roleId}
-            onChange={(e) => setForm({ ...form, roleId: Number(e.target.value) })}
-          >
-            <option value={4}>Student</option>
-            <option value={3}>Teacher</option>
-            <option value={2}>Admin</option>
-            <option value={5}>Accountant</option>
-          </select>
+          <label className="label">Account Type</label>
+          <input className="input" value="Student" readOnly />
+          <p className="mt-1 text-xs text-gray-500">Staff accounts are created by an administrator.</p>
         </div>
 
         <button type="submit" disabled={loading} className="btn btn-primary w-full">
