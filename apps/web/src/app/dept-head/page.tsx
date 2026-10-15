@@ -1,26 +1,23 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { Users, GraduationCap, BookOpen } from 'lucide-react';
-import api from '@/lib/api';
-import { StatCard } from '@/components/charts/StatCard';
+import { BookOpen, GraduationCap, Layers, Users } from 'lucide-react';
+import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 
 export default function DeptHeadDashboard() {
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    api.get('/dashboard/me').then((r) => setData(r.data)).catch(() => {});
-  }, []);
-
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">
-        Department Head {data?.department?.name ? `— ${data.department.name}` : ''}
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Teachers" value={data?.stats?.teachers ?? '—'} icon={Users} color="blue" />
-        <StatCard title="Students" value={data?.stats?.students ?? '—'} icon={GraduationCap} color="green" />
-        <StatCard title="Courses" value={data?.stats?.courses ?? '—'} icon={BookOpen} color="yellow" />
-      </div>
-    </div>
+    <DashboardOverview
+      title="Department Head Dashboard"
+      stats={[
+        { key: 'teachers', label: 'Teachers', icon: Users, color: 'blue' },
+        { key: 'students', label: 'Students', icon: GraduationCap, color: 'green' },
+        { key: 'courses', label: 'Courses', icon: BookOpen, color: 'yellow' },
+        { key: 'sections', label: 'Course sections', icon: Layers, color: 'purple' },
+      ]}
+      shortcuts={[
+        { label: 'Manage courses', href: '/dept-head/courses' },
+        { label: 'View teachers', href: '/dept-head/teachers' },
+        { label: 'View students', href: '/dept-head/students' },
+        { label: 'Reports', href: '/dept-head/reports' },
+      ]}
+    />
   );
 }
