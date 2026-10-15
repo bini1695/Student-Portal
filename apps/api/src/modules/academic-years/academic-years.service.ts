@@ -15,12 +15,22 @@ export class AcademicYearsService {
     return y;
   }
 
-  create(data: Partial<AcademicYear>) { return this.repo.save(this.repo.create(data)); }
+  async create(data: Partial<AcademicYear>) {
+    return this.repo.manager.transaction(async (manager) => {
+      if (data.isCurrent) await manager.update(AcademicYear, { isCurrent: true }, { isCurrent: false });
+      return manager.save(AcademicYear, manager.create(AcademicYear, data));
+    });
+  }
 
   async update(id: number, data: Partial<AcademicYear>) {
     await this.findOne(id);
-    await this.repo.update(id, data);
-    return this.findOne(id);
+    return this.repo.manager.transaction(async (manager) => {
+      if (data.isCurrent) {
+        await manager.update(AcademicYear, { isCurrent: true }, { isCurrent: false });
+      }
+      await manager.update(AcademicYear, id, data);
+      return manager.findOneByOrFail(AcademicYear, { id });
+    });
   }
 
   async remove(id: number) {
