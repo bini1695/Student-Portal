@@ -20,7 +20,7 @@ export class User {
   @Column({ unique: true, length: 150 })
   email: string;
 
-  @Column({ name: 'password_hash', length: 255 })
+  @Column({ name: 'password_hash', length: 255, select: false })
   passwordHash: string;
 
   @Column({ name: 'full_name', length: 150 })
