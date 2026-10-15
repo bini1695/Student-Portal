@@ -26,6 +26,23 @@ export class Grade {
   @Column({ name: 'grade_point', type: 'decimal', precision: 3, scale: 2, nullable: true })
   gradePoint: number;
 
+  @Column({
+    name: 'approval_status',
+    type: 'enum',
+    enum: ['draft', 'submitted', 'approved', 'rejected'],
+    default: 'approved',
+  })
+  approvalStatus: 'draft' | 'submitted' | 'approved' | 'rejected';
+
+  @Column({ name: 'submitted_at', type: 'datetime', nullable: true })
+  submittedAt: Date;
+
+  @Column({ name: 'approved_by', nullable: true })
+  approvedBy: number;
+
+  @Column({ name: 'approved_at', type: 'datetime', nullable: true })
+  approvedAt: Date;
+
   @Column({ name: 'entered_by', nullable: true })
   enteredBy: number;
 
