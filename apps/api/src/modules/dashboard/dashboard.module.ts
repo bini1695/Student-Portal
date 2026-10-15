@@ -11,6 +11,9 @@ import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { Payment } from '../payments/entities/payment.entity';
 import { Announcement } from '../announcements/entities/announcement.entity';
+import { Assignment } from '../assignments/entities/assignment.entity';
+import { Attendance } from '../attendance/entities/attendance.entity';
+import { Grade } from '../grades/entities/grade.entity';
 
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
@@ -28,6 +31,9 @@ import { DashboardController } from './dashboard.controller';
       Invoice,
       Payment,
       Announcement,
+      Assignment,
+      Attendance,
+      Grade,
     ]),
   ],
   controllers: [DashboardController],
