@@ -23,6 +23,10 @@ import { AnnouncementsModule } from './modules/announcements/announcements.modul
 import { FeesModule } from './modules/fees/fees.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { CourseMaterialsModule } from './modules/course-materials/course-materials.module';
+import { RequestsModule } from './modules/requests/requests.module';
+import { FinancialHoldsModule } from './modules/financial-holds/financial-holds.module';
 
 @Module({
   imports: [
@@ -64,6 +68,10 @@ import { PaymentsModule } from './modules/payments/payments.module';
     FeesModule,
     InvoicesModule,
     PaymentsModule,
+    AssignmentsModule,
+    CourseMaterialsModule,
+    RequestsModule,
+    FinancialHoldsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
