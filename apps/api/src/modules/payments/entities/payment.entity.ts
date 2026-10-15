@@ -28,4 +28,18 @@ export class Payment {
 
   @Column({ length: 255, nullable: true })
   notes: string;
+
+  @Column({
+    name: 'verification_status',
+    type: 'enum',
+    enum: ['pending', 'verified', 'rejected'],
+    default: 'verified',
+  })
+  verificationStatus: 'pending' | 'verified' | 'rejected';
+
+  @Column({ name: 'verified_by', nullable: true })
+  verifiedBy: number;
+
+  @Column({ name: 'verified_at', type: 'datetime', nullable: true })
+  verifiedAt: Date;
 }
