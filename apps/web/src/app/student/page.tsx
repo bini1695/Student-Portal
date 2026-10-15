@@ -1,24 +1,25 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { BookOpen, DollarSign, Bell } from 'lucide-react';
-import api from '@/lib/api';
-import { StatCard } from '@/components/charts/StatCard';
+import { Award, Bell, BookOpen, ClipboardList, DollarSign, GraduationCap } from 'lucide-react';
+import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 
 export default function StudentDashboard() {
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    api.get('/dashboard/me').then((r) => setData(r.data)).catch(() => {});
-  }, []);
-
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Student Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Enrollments" value={data?.stats?.totalEnrollments ?? '—'} icon={BookOpen} color="blue" />
-        <StatCard title="Balance" value={`$${data?.stats?.outstandingBalance ?? 0}`} icon={DollarSign} color="red" />
-        <StatCard title="Announcements" value={data?.recentAnnouncements?.length ?? 0} icon={Bell} color="yellow" />
-      </div>
-    </div>
+    <DashboardOverview
+      title="Student Dashboard"
+      stats={[
+        { key: 'totalEnrollments', label: 'Enrollments', icon: BookOpen, color: 'blue' },
+        { key: 'outstandingBalance', label: 'Outstanding Balance', icon: DollarSign, color: 'red', currency: true },
+        { key: 'recentAnnouncements', label: 'Recent Announcements', icon: Bell, color: 'yellow' },
+        { key: 'cumulativeGpa', label: 'Cumulative GPA', icon: Award, color: 'purple' },
+        { key: 'completedCredits', label: 'Completed Credits', icon: GraduationCap, color: 'green' },
+      ]}
+      shortcuts={[
+        { label: 'My courses', href: '/student/courses' },
+        { label: 'Enroll in a course', href: '/student/enroll' },
+        { label: 'View assignments', href: '/student/assignments' },
+        { label: 'View grades', href: '/student/grades' },
+        { label: 'View fees', href: '/student/fees' },
+      ]}
+    />
   );
 }
