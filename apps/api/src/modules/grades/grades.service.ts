@@ -39,8 +39,11 @@ export class GradesService {
       });
       return enrollments.length
         ? this.repo.find({
-            where: { enrollmentId: In(enrollments.map(({ id }) => id)), approvalStatus: 'approved' },
-            order: { id: 'ASC' },
+            where: {
+              enrollmentId: In(enrollments.map(({ id }) => id)),
+              approvalStatus: In(['submitted', 'approved']),
+            },
+            order: { submittedAt: 'DESC', id: 'DESC' },
           })
         : [];
     }
