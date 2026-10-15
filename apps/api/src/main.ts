@@ -8,9 +8,18 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
+  // ===== CORS =====
+  // Allow all local dev origins (Next.js may run on 3000 or 3001)
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:4000'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',   // 👈 THIS was missing
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.useGlobalPipes(
