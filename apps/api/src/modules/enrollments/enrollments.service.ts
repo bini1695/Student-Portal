@@ -103,6 +103,12 @@ export class EnrollmentsService {
   async update(id: number, data: Partial<Enrollment>, user: AuthenticatedUser) {
     const enrollment = await this.findOne(id, user);
     const nextStatus = data.status ?? enrollment.status;
+    if (
+      user.role === Role.DEPT_HEAD &&
+      (enrollment.status !== 'pending' || !['approved', 'rejected'].includes(nextStatus))
+    ) {
+      throw new ForbiddenException('Department heads may only approve or reject pending enrollments.');
+    }
     if (user.role === Role.STUDENT && nextStatus !== 'dropped') {
       throw new ForbiddenException('Students may only drop their own enrollment.');
     }
