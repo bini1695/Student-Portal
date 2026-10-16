@@ -35,7 +35,7 @@ export class EnrollmentsController {
   }
 
   @Patch(':id')
-  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STUDENT)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STUDENT, Role.DEPT_HEAD)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: { status?: Enrollment['status']; approvedBy?: number; approvedAt?: Date },
